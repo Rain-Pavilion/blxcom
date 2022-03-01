@@ -86,7 +86,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
                                 </Select>
                             </Col>
 
-                            <Progress style={{ marginTop: '60px' }} type="circle" percent={(batStatusObj?.soc / batStatusObj?.total_soc) ?? 0} />
+                            <Progress style={{ marginTop: '60px' }} type="circle" percent={((batStatusObj?.soc / batStatusObj?.total_soc) * 100).toFixed(2) ?? 0} />
                             <h3 style={{ marginTop: '20px' }}>电量</h3>
                         </Row>
 
