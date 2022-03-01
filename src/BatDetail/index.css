@@ -1,0 +1,68 @@
+.Ah {
+    background-color: pink;
+    border-radius: 5px;
+}
+
+.power {
+    background-color: #ffc069;
+    border-radius: 5px;
+}
+.voltage {
+    background-color: #ffa39e;
+    border-radius: 5px;
+}
+.humidity {
+    background-color: #36cfc9;
+    border-radius: 5px;
+}
+.total_electricity {
+    background-color: #95de64;
+    border-radius: 5px;
+}
+.charge_electricity {
+    background-color: #69c0ff;
+    border-radius: 5px;
+    color: #fff;
+}
+.discharge_electricity {
+    background-color: #d3adf7;
+    border-radius: 5px;
+}
+.days {
+    background-color: #ff85c0;
+    border-radius: 5px;
+}
+
+.date {
+    background-color: #95de64;
+    border-radius: 5px;
+}
+
+.right_main {
+    box-sizing: border-box;
+    padding-top: 20px;
+}
+.right_content .ant-row {
+    margin-right: 0 !important;
+}
+
+.right_main .ant-col {
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    padding: 5px 5px;
+    color: #fff;
+}
+
+.left_main {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100%;
+}
+
+.bat_pitch {
+    width: 20px;
+    background-color: #95de64;
+    border-radius: 5px;
+}

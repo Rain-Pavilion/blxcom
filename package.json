@@ -1,0 +1,108 @@
+{
+  "name": "blxcom",
+  "version": "0.0.1",
+  "private": true,
+  "main": "public/electron.js",
+  "homepage": ".",
+  "author": "xy",
+  "dependencies": {
+    "antd": "4.6.1",
+    "express": "4.17.1",
+    "moment": "2.29.1",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-scripts": "3.4.3",
+    "serialport": "^9.0.7"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "install": "electron-rebuild",
+    "ele": "electron .",
+    "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
+    "pack": "cross-env NODE_ENV=production npm run build && electron-builder --dir",
+    "dist": "cross-env NODE_ENV=production npm run build && electron-builder",
+    "package-all": "cross-env NODE_ENV=production  npm run build && electron-builder build -mwl",
+    "package-win": "npm run build && electron-builder build --win --x64"
+  },
+  "build": {
+    "productName": "保力新调试助手",
+    "npmRebuild": false,
+    "appId": "com.chuming.xycom",
+    "files": [
+      "build/",
+      "node_modules/",
+      "public/index.html",
+      "public/main.js"
+    ],
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "rpm",
+        "AppImage"
+      ],
+      "category": "Development"
+    },
+    "directories": {
+      "buildResources": "public",
+      "output": "release"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "electron-react-boilerplate",
+      "repo": "electron-react-boilerplate",
+      "private": false
+    }
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "4.2.4",
+    "@testing-library/react": "9.3.2",
+    "@testing-library/user-event": "7.1.2",
+    "concurrently": "5.3.0",
+    "cross-env": "7.0.2",
+    "electron": "5.0.13",
+    "electron-builder": "22.8.0",
+    "electron-rebuild": "1.11.0",
+    "wait-on": "5.2.0"
+  }
+}
