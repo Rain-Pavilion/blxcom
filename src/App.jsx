@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { batStatusParse,singleVParse } from './utils';
+import { batStatusParse,singleVParse, getCKS } from './utils';
 import { message } from 'antd';
 import Home from './Home/index';
 import BatDetail from './BatDetail/index';
 import 'antd/dist/antd.css';
 import './App.css';
+
+
 
 export let log = true;
 export let arr = [];
@@ -26,9 +28,17 @@ function App() {
   const [port, setPort] = useState()
   const [path, setpath] = useState()
 
+  useEffect(() => {
+      getCKS("7F10020612")
+      getCKS("7F10020611")
+      getCKS("7F10020622")
+  
+  }, [])
 
   const [singleVArr, setsingleVArr] = useState([])
-    const [pkey, setpkey] = useState(0)
+  const [pkey, setpkey] = useState(0)
+
+ 
 
   const setLog = (pramas) => {
      log =pramas
@@ -299,6 +309,7 @@ function App() {
       
       console.log(`batStatusObj`, batStatusObj)
     }, [])
+
     useEffect(() => {
     
       console.log(`batStatusObj`, batStatusObj)
