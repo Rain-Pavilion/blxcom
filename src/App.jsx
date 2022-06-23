@@ -321,7 +321,7 @@ function App() {
 
   return (<div>
       <Home page={page} callback={setpage} send={send} messageList={messageList} setLog={setLog} log={log}/>
-      <BatDetail page={page} callback={setpage} batStatusObj={batStatusObj}  PORT={PORT} fetchStatus={fetchStatus} setMOS={setMOS} fetchSingleV={fetchSingleV} fetchHardwareVersion={fetchHardwareVersion}  handleChange={handleChange} ports={ports} hardwareVersion={hardwareVersion} singleVArr={singleVArr}/>
+      <BatDetail send={send} page={page} callback={setpage} batStatusObj={batStatusObj}  PORT={PORT} fetchStatus={fetchStatus} setMOS={setMOS} fetchSingleV={fetchSingleV} fetchHardwareVersion={fetchHardwareVersion}  handleChange={handleChange} ports={ports} hardwareVersion={hardwareVersion} singleVArr={singleVArr}/>
   </div>)
 
 }
