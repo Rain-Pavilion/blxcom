@@ -100,7 +100,7 @@ export function toSettingAValue(value,scale) {
         }
     )
     
-    console.log(`bytes`, bytes)
+    console.log(`toSettingAValue bytes`, hexArr.join(''))
     return hexArr.join('')
   }
 
@@ -235,6 +235,9 @@ export const singleVParse = (arrData) => {
 export const getCKS = (dataStr) => {
     let Arr = Buffer.from(dataStr, 'hex')
     let CKS = (256 - (Arr.reduce((prev,item)=>prev+item,0) & 0xff)).toString(16)
+    if (CKS.length===1) {
+        CKS = "0"+ CKS
+    }
     let CMD = dataStr+CKS
     console.log("CKS+CMD: ",CKS,CMD)
     return [CKS,CMD]
@@ -250,8 +253,8 @@ export const batStatusParse = (arrData) => {
     if (arr[0] !== '7f' || arr ?.length !== parseInt(arr ?. [3], 16) || !arr) {
         return
     }
-    console.log('batStatusParse', arr)
-    console.log('ARR', arr.join(''))
+    // console.log('batStatusParse', arr)
+    // console.log('ARR', arr.join(''))
 
 
 
@@ -269,7 +272,7 @@ export const batStatusParse = (arrData) => {
     arr.pop()
 
     const bytes = hex2AB(arr.join(''))
-    console.log(`arr`, arr, bytes)
+    // console.log(`arr`, arr, bytes)
 
     const bat_status_bit1 = [
         '充电电流',
@@ -327,7 +330,7 @@ export const batStatusParse = (arrData) => {
         return true
     })
 
-    console.log('bat_status_info', bat_status_info)
+    // console.log('bat_status_info', bat_status_info)
 
     //[16, 0, 0, 0, 0, 0, 92, 0, 4, 0, 13, 6, 13, 0, 13, 8, 13, 0, 1, 21, 1, 21, 0, 0, 183, 0, 144, 1, 192]
 
@@ -361,7 +364,7 @@ export const batStatusParse = (arrData) => {
 
     let equilibrium_state_info = equilibrium_state_data.map(i => twoTo8two(i))
 
-    console.log('equilibrium_state_data', equilibrium_state_data,equilibrium_state_info)
+    // console.log('equilibrium_state_data', equilibrium_state_data,equilibrium_state_info)
 
     batStatusObj.equilibrium_state = equilibrium_state_info //平衡状态
 
@@ -373,7 +376,7 @@ export const batStatusParse = (arrData) => {
     offset = offset+1+batStatusObj.MOSFET_t_sensing_number
     batStatusObj.cycles  = bytes2Int(bytes[offset+1], bytes[offset])
     batStatusObj.soc  = bytes2Int(bytes[offset+3], bytes[offset+2]) / 10 //剩余电量
-    console.log('first', bytes[offset+5])
+    // console.log('first', bytes[offset+5])
     batStatusObj.total_soc  = bytes2Int(bytes[offset+5], bytes[offset+4]) / 10 //总容量
     batStatusObj.MOSFET_status  = arr[offset+6]
     return batStatusObj

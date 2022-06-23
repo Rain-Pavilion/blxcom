@@ -83,7 +83,7 @@ function Home({ page, callback ,send,messageList,setLog,log}) {
               send(text)
             }}>发送</Button>
             <TextArea onChange={(e)=>{
-              console.log(`object`, e.target.value)
+              // console.log(`object`, e.target.value)
               setText(e.target.value)
             }} onPressEnter={(e) => {
                   send(e.target.value)

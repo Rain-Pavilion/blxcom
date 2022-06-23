@@ -34,7 +34,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
         // console.log(`isInterval`, isInterval)
         if (isInterval) {
             timer.current = setInterval(() => {
-                console.log(`111`, 111)
+                // console.log(`111`, 111)
                 fetchStatus()
             }, 1500)
         }

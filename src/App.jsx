@@ -29,10 +29,10 @@ function App() {
   const [path, setpath] = useState()
 
   useEffect(() => {
-      getCKS("7F10020612")
-      getCKS("7F10020611")
-      getCKS("7F10020622")
-  
+      // getCKS("7F10020612")
+      // getCKS("7F10020611")
+      // getCKS("7F10020622")
+      // Buffer.from("7F10020C32010000002003D", 'hex')
   }, [])
 
   const [singleVArr, setsingleVArr] = useState([])
@@ -49,7 +49,7 @@ function App() {
 
   const handleBatStatusArr = (arr) => {
     
-    console.log(`batStatusArr`, batStatusArr)
+    // console.log(`batStatusArr`, batStatusArr)
     if(arr.length>0){
       let tempArr = JSON.parse(JSON.stringify(arr))
       setbatStatusObj(batStatusParse(tempArr.join('').match(/[a-z0-9][a-z0-9]/g)))
@@ -58,14 +58,14 @@ function App() {
     batStatusArr = []
   }
   const handleBatSingleVArr = (arr) => {
-    console.log(`arr`, arr)
+    // console.log(`arr`, arr)
     if(arr.length>0){
       //开关量数据
       let tempArr = JSON.parse(JSON.stringify(arr))
       let singleVArr =  tempArr.join('').match(/[a-z0-9][a-z0-9]/g)
       // console.log(`singleVArr`, singleVArr)
       setsingleVArr(singleVParse(singleVArr))
-      console.log(`singleVParse(singleVArr`, singleVParse(singleVArr))
+      // console.log(`singleVParse(singleVArr`, singleVParse(singleVArr))
     }
     
     batSingleVArr = []
@@ -119,11 +119,11 @@ function App() {
     }, 0)
     
     setTimeout(() => {
-      console.log(`hardwareVersionArr`, hardwareVersionArr)
+      // console.log(`hardwareVersionArr`, hardwareVersionArr)
       handlehardwareVersionArr(hardwareVersionArr)
       
-      console.log(`batStatusArr`, batStatusArr)
-      console.log(`batSingleVArr`, batSingleVArr)
+      // console.log(`batStatusArr`, batStatusArr)
+      // console.log(`batSingleVArr`, batSingleVArr)
     }, 300);
     
   }
@@ -138,7 +138,7 @@ function App() {
     },0)
     
     setTimeout(() => {
-      console.log(`batSingleVArr`, batSingleVArr)
+      // console.log(`batSingleVArr`, batSingleVArr)
       handleBatSingleVArr(batSingleVArr)
       setpkey(pkey + 1)
     }, 300);
@@ -193,16 +193,16 @@ function App() {
         setTimeout(() => {
           fetchStatus(true)
         }, 700);
-      console.log(`selected ${value}`);
+      // console.log(`selected ${value}`);
     }
 
   function pipe(data) {
     if (!data) {
       return
     }
-    console.log('dataStream', Buffer.from(data))
+    // console.log('dataStream', Buffer.from(data))
     const dataStream = Buffer.from(data).toString('hex')
-    console.log('dataStream', dataStream)
+    // console.log('dataStream', dataStream)
 
 
     arr.push(<p className='text_left'>{
@@ -210,7 +210,7 @@ function App() {
       dataStream
     }</p>)
     setMessageList([...arr])
-    console.log('currentCMD', currentCMD)
+    // console.log('currentCMD', currentCMD)
     switch (currentCMD) {
       
       case 'hardwareVersion':
@@ -236,7 +236,7 @@ function App() {
     port && port.on('open', function () {
       // open logic
       message.success(path+"端口开启成功！")
-      console.log('端口已打开')
+      // console.log('端口已打开')
     })
   }
 
@@ -280,7 +280,7 @@ function App() {
         }
 
         // Because there's no callback to write, write errors will be emitted on the port:
-        console.log('端口已打开')
+        // console.log('端口已打开')
         port && port.write('main screen turn on')
       })
 
@@ -307,14 +307,14 @@ function App() {
       //   singleVParse(['DD','04','00','1e','0f','66','0f','63','0f','63','0f','64','0f','3e','0f','63','0f','37','0f','5b','0f','65','0f','3b','0f','63','0f','63','0f','3c','0f','66','0f','2d','f9','f9','77'])
       // )
       
-      console.log(`batStatusObj`, batStatusObj)
+      // console.log(`batStatusObj`, batStatusObj)
     }, [])
 
     useEffect(() => {
     
-      console.log(`batStatusObj`, batStatusObj)
-      console.log(`hardwareVersion`, hardwareVersion)
-      console.log(`singleVArr`, singleVArr)
+      // console.log(`batStatusObj`, batStatusObj)
+      // console.log(`hardwareVersion`, hardwareVersion)
+      // console.log(`singleVArr`, singleVArr)
     }, [batStatusObj,hardwareVersion,singleVArr])
 
   
