@@ -369,10 +369,10 @@ export const batStatusParse = (arrData) => {
     batStatusObj.equilibrium_state = equilibrium_state_info //平衡状态
 
     batStatusObj.temperature_sensing_number = parseInt(arr[offset], 16) //电芯温感个数
-    batStatusObj.temperature_sensing = arr.slice(offset+1,offset+1+batStatusObj.temperature_sensing_number).map(i=>parseInt(i, 16)) //电芯温感
+    batStatusObj.temperature_sensing = arr.slice(offset+1,offset+1+batStatusObj.temperature_sensing_number).map(i=>byte2SignedInt(i)) //电芯温感
     offset = offset+1+batStatusObj.temperature_sensing_number
     batStatusObj.MOSFET_t_sensing_number = parseInt(arr[offset], 16) //MOSFET 温感个数
-    batStatusObj.MOSFET_t_sensing = arr.slice(offset+1,offset+1+batStatusObj.MOSFET_t_sensing_number).map(i=>parseInt(i, 16)) //MOSFET 温感
+    batStatusObj.MOSFET_t_sensing = arr.slice(offset+1,offset+1+batStatusObj.MOSFET_t_sensing_number).map(i=>byte2SignedInt(i)) //MOSFET 温感
     offset = offset+1+batStatusObj.MOSFET_t_sensing_number
     batStatusObj.cycles  = bytes2Int(bytes[offset+1], bytes[offset])
     batStatusObj.soc  = bytes2Int(bytes[offset+3], bytes[offset+2]) / 10 //剩余电量
