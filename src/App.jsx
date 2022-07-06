@@ -5,6 +5,7 @@ import Home from './Home/index';
 import BatDetail from './BatDetail/index';
 import 'antd/dist/antd.css';
 import './App.css';
+import moment from 'moment'
 
 
 
@@ -203,13 +204,11 @@ function App() {
     // console.log('dataStream', Buffer.from(data))
     const dataStream = Buffer.from(data).toString('hex')
     // console.log('dataStream', dataStream)
-
-
-    arr.push(<p className='text_left'>{
-      // ab2Hex(data)
-      dataStream
-    }</p>)
-    setMessageList([...arr])
+    if (log) {
+      arr.push(<p className='text_left'>{dataStream + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
+      setMessageList([...arr])
+    }
+    
     // console.log('currentCMD', currentCMD)
     switch (currentCMD) {
       
@@ -256,9 +255,12 @@ function App() {
       return
     }
     PORT.write(Buffer.from(msg, 'hex'), function (err) {
-      
-      arr.push(<p className='text_right'>{'发——>' + msg}</p>)
+
+      if (log) {
+        arr.push(<p className='text_right'>{'发——>' + msg + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
         setMessageList([...arr])
+      }
+
       
 
       if (err) {
