@@ -9,7 +9,7 @@ import moment from 'moment'
 
 
 
-export let log = true;
+export let LOG = true;
 export let arr = [];
 export let PORT;
 export let currentCMD = ''
@@ -28,6 +28,7 @@ function App() {
 
   const [port, setPort] = useState()
   const [path, setpath] = useState()
+  const [log, setLog] = useState(true)
 
   useEffect(() => {
       // getCKS("7F10020612")
@@ -36,14 +37,15 @@ function App() {
       // Buffer.from("7F10020C32010000002003D", 'hex')
   }, [])
 
+  useEffect(() => {
+      LOG = log
+  }, [log])
+
   const [singleVArr, setsingleVArr] = useState([])
   const [pkey, setpkey] = useState(0)
 
  
 
-  const setLog = (pramas) => {
-     log =pramas
-  }
   const setcurrentCMD = (pramas) => {
     currentCMD =pramas
   }
@@ -204,7 +206,7 @@ function App() {
     // console.log('dataStream', Buffer.from(data))
     const dataStream = Buffer.from(data).toString('hex')
     // console.log('dataStream', dataStream)
-    if (log) {
+    if (LOG) {
       arr.push(<p className='text_left'>{dataStream + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
       setMessageList([...arr])
     }
@@ -256,7 +258,7 @@ function App() {
     }
     PORT.write(Buffer.from(msg, 'hex'), function (err) {
 
-      if (log) {
+      if (LOG) {
         arr.push(<p className='text_right'>{'发——>' + msg + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
         setMessageList([...arr])
       }
