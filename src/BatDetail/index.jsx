@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Statistic, Row, Col, Select, Progress, Tooltip, Switch, Button } from 'antd';
-import './index.css';
+import { Statistic, Row, Col, Select, Progress, Tooltip,message, Switch, Button, Modal, Input } from 'antd';
+import './index.css'; 
+import {getCKS, toSettingAValue} from '../utils'
 import { ReloadOutlined, UsbOutlined } from '@ant-design/icons';
 
 
@@ -17,25 +18,51 @@ const projectText = [
 
 
 
-function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fetchStatus }) {
+function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fetchStatus, send }) {
     const [key, setkey] = useState(0)
     const [isInterval, setisInterval] = useState(true)
+    const [setCycles, setSetCycles] = useState(0)
+    const [setSoc, setSetSoc] = useState(0)
+    const [setTotalSoc, setSetTotalSoc] = useState(0)
+
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
     let timer = useRef()
 
 
     useEffect(() => {
         // console.log(`isInterval`, isInterval)
-        if(isInterval){
-            timer.current = setInterval(()=>{
-                console.log(`111`, 111)
+        if (isInterval) {
+            timer.current = setInterval(() => {
+                // console.log(`111`, 111)
                 fetchStatus()
-            },1500)
+            }, 1500)
         }
-        if(!isInterval){
+        if (!isInterval) {
             clearInterval(timer.current)
         }
     }, [isInterval])
 
+    const handleOk = () => {
+        setIsModalVisible(false);
+        const [cks,cmd] = getCKS(`7F10020C32${toSettingAValue(setCycles,1)}${toSettingAValue(setSoc,10)}${toSettingAValue(setTotalSoc,10)}`)
+        console.log("cmd",cmd.toUpperCase())
+        send(cmd.toUpperCase())
+        message.info('命令已发送',1)
+        
+        setIsModalVisible(false);
+    };
+
+    const handleSetAh = () => {
+        setSetCycles(batStatusObj?.cycles?batStatusObj?.cycles:0)
+        setSetSoc(batStatusObj?.soc?batStatusObj?.soc:0)
+        setSetTotalSoc(batStatusObj?.total_soc?batStatusObj?.total_soc:0)
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
 
 
 
@@ -70,9 +97,14 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
                 </Tooltip>
 
             </Col>
+
             <Col className='right_content'>
                 <Row gutter={16}>
-
+                    <Modal title="修改容量" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                        <Input type="number" prefix="循环次数" suffix="次" value={setCycles}  onChange={(e)=>setSetCycles(e.target.value)}  />
+                        <Input type="number" prefix="剩余电量" suffix="AH" value={setSoc}  onChange={(e)=>setSetSoc(e.target.value)} />
+                        <Input type="number" prefix="总容量" suffix="AH"   value={setTotalSoc} onChange={(e)=>setSetTotalSoc(e.target.value)}/>
+                    </Modal>
                     <Col span={8}>
                         <Row className='left_main'>
                             <Col>
@@ -86,8 +118,14 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
                                 </Select>
                             </Col>
 
-                            <Progress style={{ marginTop: '60px' }} type="circle" percent={((batStatusObj?.soc / batStatusObj?.total_soc) * 100).toFixed(2) ?? 0} />
+                            <Progress style={{ marginTop: '60px' }} type="circle" percent={(batStatusObj?.soc || batStatusObj?.soc ===0 ) ? ((batStatusObj?.soc / batStatusObj?.total_soc) * 100).toFixed(2) : '-' ?? 0} />
                             <h3 style={{ marginTop: '20px' }}>电量</h3>
+
+                            <Button 
+                                type="primary" 
+                                style={{ marginTop: '20px' }} 
+                                onClick={handleSetAh}
+                            >修改容量</Button>
                         </Row>
 
                     </Col>
@@ -129,7 +167,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
                             }
 
-<Col span={23} offset={1} >
+                            <Col span={23} offset={1} >
                                 <span style={{ color: '#000', marginRight: 20 }}>电芯温感</span>
                             </Col>
                             {
@@ -141,7 +179,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
 
                             }
-                             <Col span={23} offset={1} >
+                            <Col span={23} offset={1} >
                                 <span style={{ color: '#000', marginRight: 20 }}>MOSFET 温感</span>
                             </Col>
                             {
@@ -157,14 +195,14 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
                             <Col className='voltage' span={23} offset={1}>
                                 <p>平衡状态</p>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap' }}>
-                                    {(()=>{
-                                        if(batStatusObj?.equilibrium_state?.flat().includes('1')){
+                                    {(() => {
+                                        if (batStatusObj?.equilibrium_state?.flat().includes('1')) {
                                             return batStatusObj?.equilibrium_state?.flat()?.map((item, index) => {
                                                 return <span style={{ width: 120 }}>
                                                     串{index + 1}: <Switch checkedChildren="1" unCheckedChildren="0" checked={+item} />
                                                 </span>
                                             })
-                                        }else {
+                                        } else {
                                             return '未开启平衡'
                                         }
                                     })()}
@@ -173,7 +211,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
                             </Col>
                             <br></br>
-                            
+
 
                         </Row>
                     </Col>

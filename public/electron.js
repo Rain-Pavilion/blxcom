@@ -34,7 +34,9 @@ function createWindow() {
   });
 
   // 删除菜单
-  win.removeMenu();
+  if(!isDev){
+    win.removeMenu();
+  }
 
 
   console.log(isDev ? 'http://localhost:3000' : url.format({

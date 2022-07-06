@@ -1,6 +1,6 @@
 {
   "name": "blxcom",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "private": true,
   "main": "public/electron.js",
   "homepage": ".",
@@ -30,7 +30,7 @@
   "build": {
     "productName": "保力新调试助手",
     "npmRebuild": false,
-    "appId": "com.chuming.xycom",
+    "appId": "com.blxcom.xy",
     "files": [
       "build/",
       "node_modules/",

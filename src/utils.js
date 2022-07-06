@@ -28,6 +28,82 @@ export function twoTo16two(c_Value) {
 
 }
 
+export function toSettingAValue(value,scale) {
+    const scales = {0: scale, 1: 5, 2: 100, 3: 5, 4: 10000, 5: 10000, 6: 10000, 7: 10000, 17:100, 18:100, 19:10, 20:10000, 
+      21:10000, 30:10000, 31:10000, 32:10000, 33:10000, 34:10000, 36:10, 37:10}
+    const signed = [8, 9, 10, 11, 15, 16, 22, 23, 24, 25, 26, 27]
+    const byteN = {8:1, 9:1, 10:1, 11:1, 22:1, 23:1, 24:1, 25:1, 26:1, 27:1, 35:6, 38:1,39:1}
+    const offsets = {}
+  
+    let settingAValue = [value].slice()
+
+    // console.log(`settingAValue`, settingAValue,paramList,DataManager.settingA.length)
+  
+    let bytes = new Uint8Array(2)    // 注意长度需要准确相等，否则会以0填充
+    let index = 0
+  
+    for (let i = 0; i < settingAValue.length; i++) {
+      if (i in offsets) {
+        settingAValue[i] -= offsets[i]
+      }
+  
+      if (i in scales) {
+        settingAValue[i] *= scales[i]
+      } 
+      // 满电电压有两种模式，如果小于6.5535V则视为单体电压,单位0.1mv
+      if (i == 19 && settingAValue[i] < 65.535) settingAValue[i] *= 1000
+  
+      if (i in signed) {
+        let value = settingAValue[i]
+  
+        if (byteN[i] == 1) {
+          if (value < 0) {
+            value += 256
+          }
+        } else if (byteN[i] == 2) {
+          if (value < 0) {
+            value += 65536
+          }
+        }
+      }
+  
+      if (i in byteN) {
+        if (byteN[i] == 6) {
+          for (let j = 0; j < 3; j++) {
+            bytes[index++] = settingAValue[i].charCodeAt(j)
+          }
+  
+          let numVal = parseInt(settingAValue[i].substring(3))
+          // console.log('deviceId numVal:', numVal)
+  
+          for (let j = 0; j < 3; j++) {
+            bytes[index++] = (numVal >> ((2 - j) * 8)) & 0xff
+          }
+  
+        } else if (byteN[i] == 4) {
+          for (let j = 0; j < 4; j++) {
+            bytes[index++] = (settingAValue[i] >> ((3 - j) * 8)) & 0xff
+          }
+        } else if (byteN[i] == 1) {
+          bytes[index++] = settingAValue[i]
+        }
+      } else {
+        bytes[index++] = settingAValue[i] >> 8
+        bytes[index++] = settingAValue[i]
+      }
+    }
+    
+    const hexArr = Array.prototype.map.call(
+        new Uint8Array(bytes.reverse()),
+        function (byte) {
+            return ('00' + byte.toString(16)).slice(-2)
+        }
+    )
+    
+    console.log(`toSettingAValue bytes`, hexArr.join(''))
+    return hexArr.join('')
+  }
+
 // ArrayBuffer转16进度字符串示例
 function ab2Hex(buffer) {
     const hexArr = Array.prototype.map.call(
@@ -156,6 +232,17 @@ export const singleVParse = (arrData) => {
     return singleVArr
 }
 
+export const getCKS = (dataStr) => {
+    let Arr = Buffer.from(dataStr, 'hex')
+    let CKS = (256 - (Arr.reduce((prev,item)=>prev+item,0) & 0xff)).toString(16)
+    if (CKS.length===1) {
+        CKS = "0"+ CKS
+    }
+    let CMD = dataStr+CKS
+    console.log("CKS+CMD: ",CKS,CMD)
+    return [CKS,CMD]
+}
+
 export const batStatusParse = (arrData) => {
 
     //解析电池状态数据
@@ -166,8 +253,8 @@ export const batStatusParse = (arrData) => {
     if (arr[0] !== '7f' || arr ?.length !== parseInt(arr ?. [3], 16) || !arr) {
         return
     }
-    console.log('batStatusParse', arr)
-    console.log('ARR', arr.join(''))
+    // console.log('batStatusParse', arr)
+    // console.log('ARR', arr.join(''))
 
 
 
@@ -185,7 +272,7 @@ export const batStatusParse = (arrData) => {
     arr.pop()
 
     const bytes = hex2AB(arr.join(''))
-    console.log(`arr`, arr, bytes)
+    // console.log(`arr`, arr, bytes)
 
     const bat_status_bit1 = [
         '充电电流',
@@ -243,7 +330,7 @@ export const batStatusParse = (arrData) => {
         return true
     })
 
-    console.log('bat_status_info', bat_status_info)
+    // console.log('bat_status_info', bat_status_info)
 
     //[16, 0, 0, 0, 0, 0, 92, 0, 4, 0, 13, 6, 13, 0, 13, 8, 13, 0, 1, 21, 1, 21, 0, 0, 183, 0, 144, 1, 192]
 
@@ -277,19 +364,19 @@ export const batStatusParse = (arrData) => {
 
     let equilibrium_state_info = equilibrium_state_data.map(i => twoTo8two(i))
 
-    console.log('equilibrium_state_data', equilibrium_state_data,equilibrium_state_info)
+    // console.log('equilibrium_state_data', equilibrium_state_data,equilibrium_state_info)
 
     batStatusObj.equilibrium_state = equilibrium_state_info //平衡状态
 
     batStatusObj.temperature_sensing_number = parseInt(arr[offset], 16) //电芯温感个数
-    batStatusObj.temperature_sensing = arr.slice(offset+1,offset+1+batStatusObj.temperature_sensing_number).map(i=>parseInt(i, 16)) //电芯温感
+    batStatusObj.temperature_sensing = arr.slice(offset+1,offset+1+batStatusObj.temperature_sensing_number).map(i=>byte2SignedInt(parseInt(i, 16))) //电芯温感
     offset = offset+1+batStatusObj.temperature_sensing_number
     batStatusObj.MOSFET_t_sensing_number = parseInt(arr[offset], 16) //MOSFET 温感个数
-    batStatusObj.MOSFET_t_sensing = arr.slice(offset+1,offset+1+batStatusObj.MOSFET_t_sensing_number).map(i=>parseInt(i, 16)) //MOSFET 温感
+    batStatusObj.MOSFET_t_sensing = arr.slice(offset+1,offset+1+batStatusObj.MOSFET_t_sensing_number).map(i=>byte2SignedInt(parseInt(i, 16))) //MOSFET 温感
     offset = offset+1+batStatusObj.MOSFET_t_sensing_number
     batStatusObj.cycles  = bytes2Int(bytes[offset+1], bytes[offset])
     batStatusObj.soc  = bytes2Int(bytes[offset+3], bytes[offset+2]) / 10 //剩余电量
-    console.log('first', bytes[offset+5])
+    // console.log('first', bytes[offset+5])
     batStatusObj.total_soc  = bytes2Int(bytes[offset+5], bytes[offset+4]) / 10 //总容量
     batStatusObj.MOSFET_status  = arr[offset+6]
     return batStatusObj

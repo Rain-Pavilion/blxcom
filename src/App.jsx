@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { batStatusParse,singleVParse } from './utils';
+import { batStatusParse,singleVParse, getCKS } from './utils';
 import { message } from 'antd';
 import Home from './Home/index';
 import BatDetail from './BatDetail/index';
 import 'antd/dist/antd.css';
 import './App.css';
+import moment from 'moment'
 
-export let log = true;
+
+
+export let LOG = true;
 export let arr = [];
 export let PORT;
 export let currentCMD = ''
@@ -25,21 +28,31 @@ function App() {
 
   const [port, setPort] = useState()
   const [path, setpath] = useState()
+  const [log, setLog] = useState(true)
 
+  useEffect(() => {
+      // getCKS("7F10020612")
+      // getCKS("7F10020611")
+      // getCKS("7F10020622")
+      // Buffer.from("7F10020C32010000002003D", 'hex')
+  }, [])
+
+  useEffect(() => {
+      LOG = log
+  }, [log])
 
   const [singleVArr, setsingleVArr] = useState([])
-    const [pkey, setpkey] = useState(0)
+  const [pkey, setpkey] = useState(0)
 
-  const setLog = (pramas) => {
-     log =pramas
-  }
+ 
+
   const setcurrentCMD = (pramas) => {
     currentCMD =pramas
   }
 
   const handleBatStatusArr = (arr) => {
     
-    console.log(`batStatusArr`, batStatusArr)
+    // console.log(`batStatusArr`, batStatusArr)
     if(arr.length>0){
       let tempArr = JSON.parse(JSON.stringify(arr))
       setbatStatusObj(batStatusParse(tempArr.join('').match(/[a-z0-9][a-z0-9]/g)))
@@ -48,14 +61,14 @@ function App() {
     batStatusArr = []
   }
   const handleBatSingleVArr = (arr) => {
-    console.log(`arr`, arr)
+    // console.log(`arr`, arr)
     if(arr.length>0){
       //开关量数据
       let tempArr = JSON.parse(JSON.stringify(arr))
       let singleVArr =  tempArr.join('').match(/[a-z0-9][a-z0-9]/g)
       // console.log(`singleVArr`, singleVArr)
       setsingleVArr(singleVParse(singleVArr))
-      console.log(`singleVParse(singleVArr`, singleVParse(singleVArr))
+      // console.log(`singleVParse(singleVArr`, singleVParse(singleVArr))
     }
     
     batSingleVArr = []
@@ -109,11 +122,11 @@ function App() {
     }, 0)
     
     setTimeout(() => {
-      console.log(`hardwareVersionArr`, hardwareVersionArr)
+      // console.log(`hardwareVersionArr`, hardwareVersionArr)
       handlehardwareVersionArr(hardwareVersionArr)
       
-      console.log(`batStatusArr`, batStatusArr)
-      console.log(`batSingleVArr`, batSingleVArr)
+      // console.log(`batStatusArr`, batStatusArr)
+      // console.log(`batSingleVArr`, batSingleVArr)
     }, 300);
     
   }
@@ -128,7 +141,7 @@ function App() {
     },0)
     
     setTimeout(() => {
-      console.log(`batSingleVArr`, batSingleVArr)
+      // console.log(`batSingleVArr`, batSingleVArr)
       handleBatSingleVArr(batSingleVArr)
       setpkey(pkey + 1)
     }, 300);
@@ -183,24 +196,22 @@ function App() {
         setTimeout(() => {
           fetchStatus(true)
         }, 700);
-      console.log(`selected ${value}`);
+      // console.log(`selected ${value}`);
     }
 
   function pipe(data) {
     if (!data) {
       return
     }
-    console.log('dataStream', Buffer.from(data))
+    // console.log('dataStream', Buffer.from(data))
     const dataStream = Buffer.from(data).toString('hex')
-    console.log('dataStream', dataStream)
-
-
-    arr.push(<p className='text_left'>{
-      // ab2Hex(data)
-      dataStream
-    }</p>)
-    setMessageList([...arr])
-    console.log('currentCMD', currentCMD)
+    // console.log('dataStream', dataStream)
+    if (LOG) {
+      arr.push(<p className='text_left'>{dataStream + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
+      setMessageList([...arr])
+    }
+    
+    // console.log('currentCMD', currentCMD)
     switch (currentCMD) {
       
       case 'hardwareVersion':
@@ -226,7 +237,7 @@ function App() {
     port && port.on('open', function () {
       // open logic
       message.success(path+"端口开启成功！")
-      console.log('端口已打开')
+      // console.log('端口已打开')
     })
   }
 
@@ -246,9 +257,12 @@ function App() {
       return
     }
     PORT.write(Buffer.from(msg, 'hex'), function (err) {
-      
-      arr.push(<p className='text_right'>{'发——>' + msg}</p>)
+
+      if (LOG) {
+        arr.push(<p className='text_right'>{'发——>' + msg + `——${moment().format('YYYY-MM-DD HH:mm:ss:SSS')}`}</p>)
         setMessageList([...arr])
+      }
+
       
 
       if (err) {
@@ -270,7 +284,7 @@ function App() {
         }
 
         // Because there's no callback to write, write errors will be emitted on the port:
-        console.log('端口已打开')
+        // console.log('端口已打开')
         port && port.write('main screen turn on')
       })
 
@@ -297,20 +311,21 @@ function App() {
       //   singleVParse(['DD','04','00','1e','0f','66','0f','63','0f','63','0f','64','0f','3e','0f','63','0f','37','0f','5b','0f','65','0f','3b','0f','63','0f','63','0f','3c','0f','66','0f','2d','f9','f9','77'])
       // )
       
-      console.log(`batStatusObj`, batStatusObj)
+      // console.log(`batStatusObj`, batStatusObj)
     }, [])
+
     useEffect(() => {
     
-      console.log(`batStatusObj`, batStatusObj)
-      console.log(`hardwareVersion`, hardwareVersion)
-      console.log(`singleVArr`, singleVArr)
+      // console.log(`batStatusObj`, batStatusObj)
+      // console.log(`hardwareVersion`, hardwareVersion)
+      // console.log(`singleVArr`, singleVArr)
     }, [batStatusObj,hardwareVersion,singleVArr])
 
   
 
   return (<div>
       <Home page={page} callback={setpage} send={send} messageList={messageList} setLog={setLog} log={log}/>
-      <BatDetail page={page} callback={setpage} batStatusObj={batStatusObj}  PORT={PORT} fetchStatus={fetchStatus} setMOS={setMOS} fetchSingleV={fetchSingleV} fetchHardwareVersion={fetchHardwareVersion}  handleChange={handleChange} ports={ports} hardwareVersion={hardwareVersion} singleVArr={singleVArr}/>
+      <BatDetail send={send} page={page} callback={setpage} batStatusObj={batStatusObj}  PORT={PORT} fetchStatus={fetchStatus} setMOS={setMOS} fetchSingleV={fetchSingleV} fetchHardwareVersion={fetchHardwareVersion}  handleChange={handleChange} ports={ports} hardwareVersion={hardwareVersion} singleVArr={singleVArr}/>
   </div>)
 
 }
