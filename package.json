@@ -30,7 +30,7 @@
   "build": {
     "productName": "保力新调试助手",
     "npmRebuild": false,
-    "appId": "com.chuming.xycom",
+    "appId": "com.blxcom.xy",
     "files": [
       "build/",
       "node_modules/",
