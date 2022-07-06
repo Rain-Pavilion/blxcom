@@ -4,5 +4,5 @@ window.electron = require('electron');
 window.fs = require('fs');
 window.express = require('express');
 window.serialport = require('serialport')
-
+window.ipcRenderer = require('electron').ipcRenderer;
 // https://www.dotcoo.com/create-react-app-electron-electron-builder
