@@ -1,6 +1,6 @@
 {
   "name": "blxcom",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "main": "public/electron.js",
   "homepage": ".",
