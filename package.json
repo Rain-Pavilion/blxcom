@@ -22,6 +22,7 @@
     "eject": "react-scripts eject",
     "install": "electron-rebuild",
     "publish": "electron-builder -p always",
+    "postinstall": "electron-builder install-app-deps",
     "ele": "electron .",
     "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
     "pack": "cross-env NODE_ENV=production npm run build && electron-builder --dir",

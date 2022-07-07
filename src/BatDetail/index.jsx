@@ -17,7 +17,41 @@ const projectText = [
 
 
 
+const { ipcRenderer } = window;
+
 function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fetchStatus }) {
+    // 页面上的提示信息
+  const [text, setText] = useState('');
+  // 当前应用版本信息
+  const [version, setVersion] = useState('0.0.0');
+  // 当前下载进度
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // 给主进程发通知，让主进程告诉我们当前应用的版本是多少
+    ipcRenderer.send('checkAppVersion');
+    // 接收主进程发来的通知，检测当前应用版本
+    ipcRenderer.on('version', (event, version) => {
+      console.log("version",version) // Prints 'whoooooooh!'
+      setVersion(version);
+    })
+    // ipcRenderer.on("version", (version) => {
+    //   setVersion(version);
+    // });
+
+    // 给主进程发通知，检测当前应用是否需要更新
+    ipcRenderer.send('checkForUpdate');
+    // 接收主进程发来的通知，告诉用户当前应用是否需要更新
+    ipcRenderer.on('message', (event, data) => {
+      setText(data);
+    });
+    // 如果当前应用有新版本需要下载，则监听主进程发来的下载进度
+    ipcRenderer.on('downloadProgress', (event, data) => {
+      const progress = parseInt(data.percent, 10);
+      setProgress(progress);
+    });
+  }, []);
+
     const [key, setkey] = useState(0)
     const [isInterval, setisInterval] = useState(true)
     let timer = useRef()
@@ -25,13 +59,13 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
     useEffect(() => {
         // console.log(`isInterval`, isInterval)
-        if(isInterval){
-            timer.current = setInterval(()=>{
+        if (isInterval) {
+            timer.current = setInterval(() => {
                 console.log(`111`, 111)
                 fetchStatus()
-            },1500)
+            }, 1500)
         }
-        if(!isInterval){
+        if (!isInterval) {
             clearInterval(timer.current)
         }
     }, [isInterval])
@@ -88,6 +122,12 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
                             <Progress style={{ marginTop: '60px' }} type="circle" percent={((batStatusObj?.soc / batStatusObj?.total_soc) * 100).toFixed(2) ?? 0} />
                             <h3 style={{ marginTop: '20px' }}>电量</h3>
+
+                            <div style={{ marginTop: '20px',maxWidth: '80%', wordBreak: 'break-all' }}>
+                                <p>当前app版本: {version}</p>
+                                <p>{text}</p>
+                                {progress ? <p>下载进度：{progress}%</p> : null}
+                            </div>
                         </Row>
 
                     </Col>
@@ -129,7 +169,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
                             }
 
-<Col span={23} offset={1} >
+                            <Col span={23} offset={1} >
                                 <span style={{ color: '#000', marginRight: 20 }}>电芯温感</span>
                             </Col>
                             {
@@ -141,7 +181,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
 
                             }
-                             <Col span={23} offset={1} >
+                            <Col span={23} offset={1} >
                                 <span style={{ color: '#000', marginRight: 20 }}>MOSFET 温感</span>
                             </Col>
                             {
@@ -157,14 +197,14 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
                             <Col className='voltage' span={23} offset={1}>
                                 <p>平衡状态</p>
                                 <p style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap' }}>
-                                    {(()=>{
-                                        if(batStatusObj?.equilibrium_state?.flat().includes('1')){
+                                    {(() => {
+                                        if (batStatusObj?.equilibrium_state?.flat().includes('1')) {
                                             return batStatusObj?.equilibrium_state?.flat()?.map((item, index) => {
                                                 return <span style={{ width: 120 }}>
                                                     串{index + 1}: <Switch checkedChildren="1" unCheckedChildren="0" checked={+item} />
                                                 </span>
                                             })
-                                        }else {
+                                        } else {
                                             return '未开启平衡'
                                         }
                                     })()}
@@ -173,7 +213,7 @@ function BatDetail({ page, callback, PORT, handleChange, ports, batStatusObj, fe
 
                             </Col>
                             <br></br>
-                            
+
 
                         </Row>
                     </Col>

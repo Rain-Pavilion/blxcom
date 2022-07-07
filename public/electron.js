@@ -37,7 +37,9 @@ function createWindow() {
   });
 
   // 删除菜单
-  win.removeMenu();
+  if(!isDev){
+    win.removeMenu();
+  }
 
 
   console.log(isDev ? 'http://localhost:3000' : url.format({
@@ -108,13 +110,14 @@ autoUpdater.on('update-available', () => {
       title: '应用有新的更新',
       message: '发现新版本，是否现在更新？',
       buttons: ['是', '否']
-  }).then(({ response }) => {
-      if (response === 0) {
-          // 下载更新
-          autoUpdater.downloadUpdate();
-          sendUpdateMessage(message.updateAva);
-      }
-  });
+  },(response, checkboxChecked) => {
+    console.log("update-available",response,checkboxChecked)
+    if (response === 0) {
+      // 下载更新
+      autoUpdater.downloadUpdate();
+      sendUpdateMessage(message.updateAva);
+    }
+  })
   
   // 也可以默认直接更新，二选一即可
   // autoUpdater.downloadUpdate();
@@ -136,10 +139,12 @@ autoUpdater.on('update-downloaded', () => {
   dialog.showMessageBox({
       title: '安装更新',
       message: '更新下载完毕，应用将重启并进行安装'
-  }).then(() => {
+  },(response, checkboxChecked) => {
+      console.log("update-downloaded",response,checkboxChecked)
+    
       // 退出并安装应用
       setImmediate(() => autoUpdater.quitAndInstall());
-  });
+  })
 });
 // 我们需要主动触发一次更新检查
 ipcMain.on('checkForUpdate', () => {
